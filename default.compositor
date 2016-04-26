@@ -6,3 +6,5 @@ material
         ball
             diffuse = pipeline/textures/ball_tex.png
             normal = pipeline/textures/ball_n.png
+        leaf
+            normal = pipeline/textures/leaf_n.png

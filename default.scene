@@ -5,15 +5,12 @@ node
             parent = ROOT
             position = 0.000000 -10.000000 20.000000
             light = default
-            script = scripts/Main.py
         camera
             parent = ROOT
-            position = -0.958163 -6.873294 2.654914
-            rotation = 73.499695 0.000000 -7.399796
+            position = -8.433346 -4.910903 9.449471
+            rotation = 44.799698 0.000000 -64.299828
             script = scripts/CameraSync.py
-        ball
+        leaf
             parent = ROOT
-            rotation = -45.000000 0.000000 0.000000
-            material = ball
-            model = models/ball.osgt
-            script = scripts/Ball.py
+            material = leaf
+            model = models/leaf.osgt
