@@ -12,3 +12,6 @@ material
         source
             diffuse = pipeline/textures/source_tex.png
             normal = pipeline/textures/source_n.png
+        filter
+            diffuse = pipeline/textures/filter_tex.png
+            normal = pipeline/textures/filter_n.png

@@ -7,8 +7,8 @@ node
             light = default
         camera
             parent = ROOT
-            position = -8.433346 -4.910903 9.449471
-            rotation = 44.799698 0.000000 -64.299828
+            position = 0.706468 -13.512439 13.351008
+            rotation = 47.699718 0.000000 -18.999823
             script = scripts/CameraSync.py
         leaf
             parent = ROOT
@@ -19,3 +19,8 @@ node
             parent = ROOT
             material = source
             model = models/source.osgt
+        filter
+            parent = ROOT
+            position = 5.000000 0.000000 0.000000
+            material = filter
+            model = models/filter.osgt
