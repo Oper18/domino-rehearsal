@@ -12,5 +12,10 @@ node
             script = scripts/CameraSync.py
         leaf
             parent = ROOT
+            position = 0.000000 3.000000 0.000000
             material = leaf
             model = models/leaf.osgt
+        source
+            parent = ROOT
+            material = source
+            model = models/source.osgt
