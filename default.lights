@@ -1,0 +1,7 @@
+
+light
+    default
+        default
+            shadowJitteringScale = 16
+            shadowFragmentShader = pipeline/pass1Shadow.frag
+            shadowTextureSize = 1024 x 1024

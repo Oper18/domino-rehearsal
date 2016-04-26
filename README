@@ -1,0 +1,124 @@
+
+This is a so-called empty project for Open Game Studio (OGS) Editor.
+
+Overview
+========
+
+This project contains the bare minimum of what a normal OGS project could
+contain. Its purpose is to serve as a starting point for all new projects
+and to explain OGS project hierarchy to newcomers.
+
+Hierarchy
+=========
+.
+├── default.actions
+│
+│   Contains a list of actions. An action is a set of node property changes.
+│   In this case, it contains single action to rotate a scene node by 360
+│   degrees along Y axis for 1000 milliseconds.
+│
+├── default.compositor
+│
+│   Contains a list of materials. A material is a set of textures applied
+│   to a node's model.
+│   In this case, it contains diffuse and normal maps (textures) applied
+│   to the ball.
+│
+├── default.lights
+│
+│   Contains a list of lights. Only directional lights are supported at
+│   the moment.
+│   In this case, it contains a light with soft shadow map configuration.
+│
+├── default.scene
+│
+│   Contains a list of scene nodes and their relationship (parent-child).
+│   In this case, it contains:
+│   * light
+│   * camera
+│   * ball
+│
+├── default.sounds
+│
+│   Contains a list of sounds. Sound can be represented as a buffer
+│   and a stream. Buffer keeps its data in memory (suitable to replay
+│   clicks, selections and other short files), whereas stream reads data
+│   from a file continuously (suitable to replay a background music).
+│   In this case, it contains a sound buffer to replay on game start.
+│
+├── models
+│   │    
+│   │   Contains models in OpenSceneGraph format. You can use
+│   │   "osgexport" Blender exporter to generate it.
+│   │ 
+│   └── ball.osgt
+│
+│       Ball model for the ball scene node.
+│
+├── pipeline
+│   │
+│   │   Contains shaders and other pipeline related files.
+│   │   In this case, the project uses standard pipeline, so the
+│   │   directory has no files.
+│   │
+│   └── textures
+│       │
+│       │   Contains PNG files that represent textures.
+│       │
+│       ├── ball_n.png
+│       │   
+│       │   Normal map (texture) for the ball material.
+│       │    
+│       └── ball_tex.png
+│
+│           Diffuse map (texture) for the ball material.
+│
+├── player.shortcuts
+│
+│   Contains a list of shortcuts for when the project is run
+│   by the Player.
+│   In this case, it specifies that LMB click triggers 'select'
+│   shortcut activation.
+│
+├── README
+│
+│   This file.
+│
+├── scripts
+│   │
+│   │   Contains Python scripts for scene nodes. Each script exports
+│   │   its own API into Environment that is shared among the engine
+│   │   and all scripts.
+│   │
+│   ├── Ball.py
+│   │
+│   │   Provides 'ball...moving' API to rotate the ball. Rotation is
+│   │   performed by the above mentioned rotation action.
+│   │
+│   └── Main.py
+│
+│       Subscribes to the space key press. When the key is pressed, it
+│       uses the above mentioned API to rotate the ball. Also, replays
+│       the above mentioned game start sound at the same time.
+│
+├── sounds
+│   │
+│   │   Contains sounds in OGG format.
+│   │
+│   ├── start.ogg
+│   │
+│   │   Sound to replay when the space key is pressed.
+│   │
+│   └── start.README
+│
+│       Explains where the sound file comes from.
+│
+└── src
+    │
+    │   Contains sources for necessary resources.
+    │
+    └── models.blend
+
+        Contains the ball model in Blender format. It was used to generate
+        the model itself and its normal map (texture).
+

@@ -1,0 +1,5 @@
+rotate
+    default
+        rotateBall
+            point = 0 0 0 0
+            point = 1000 0 360 0

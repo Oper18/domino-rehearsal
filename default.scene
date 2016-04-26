@@ -1,0 +1,19 @@
+
+node
+    default
+        light
+            parent = ROOT
+            position = 0.000000 -10.000000 20.000000
+            light = default
+            script = scripts/Main.py
+        camera
+            parent = ROOT
+            position = -0.958163 -6.873294 2.654914
+            rotation = 73.499695 0.000000 -7.399796
+            script = scripts/CameraSync.py
+        ball
+            parent = ROOT
+            rotation = -45.000000 0.000000 0.000000
+            material = ball
+            model = models/ball.osgt
+            script = scripts/Ball.py

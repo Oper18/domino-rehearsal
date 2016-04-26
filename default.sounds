@@ -1,0 +1,4 @@
+soundBuffer
+    default
+        start
+            file = sounds/start.ogg
