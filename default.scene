@@ -15,6 +15,11 @@ node
             position = 0.000000 3.000000 0.000000
             material = leaf
             model = models/leaf.osgt
+        tile
+            parent = leaf
+            position = 0.000000 0.000000 2.000000
+            material = tile
+            model = models/tile.osgt
         source
             parent = ROOT
             material = source

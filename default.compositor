@@ -18,3 +18,5 @@ material
         destination
             diffuse = pipeline/textures/destination_tex.png
             normal = pipeline/textures/destination_n.png
+        tile
+            normal = pipeline/textures/tile_n.png
