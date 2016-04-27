@@ -24,3 +24,8 @@ node
             position = 5.000000 0.000000 0.000000
             material = filter
             model = models/filter.osgt
+        destination
+            parent = ROOT
+            position = 10.000000 0.000000 0.000000
+            material = destination
+            model = models/destination.osgt
