@@ -7,8 +7,8 @@ node
             light = default
         camera
             parent = ROOT
-            position = 0.706468 -13.512439 13.351008
-            rotation = 47.699718 0.000000 -18.999823
+            position = -5.634806 5.321584 5.431193
+            rotation = 57.499809 0.000000 -118.200043
             script = scripts/CameraSync.py
         leaf
             parent = ROOT
@@ -17,8 +17,7 @@ node
             model = models/leaf.osgt
         tile
             parent = leaf
-            position = 0.000000 0.000000 2.000000
-            material = tile
+            material = tile00
             model = models/tile.osgt
         source
             parent = ROOT
