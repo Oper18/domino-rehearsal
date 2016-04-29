@@ -7,18 +7,14 @@ node
             light = default
         camera
             parent = ROOT
-            position = -5.634806 5.321584 5.431193
-            rotation = 57.499809 0.000000 -118.200043
+            position = -2.828758 -9.021199 10.723674
+            rotation = 45.699791 0.000000 -38.600075
             script = scripts/CameraSync.py
         leaf
             parent = ROOT
             position = 0.000000 3.000000 0.000000
             material = leaf
             model = models/leaf.osgt
-        tile
-            parent = leaf
-            material = tile00
-            model = models/tile.osgt
         source
             parent = ROOT
             material = source
@@ -33,3 +29,19 @@ node
             position = 10.000000 0.000000 0.000000
             material = destination
             model = models/destination.osgt
+        lcd_digit0
+            parent = ROOT
+            position = 2.000000 -2.000000 2.000000
+            material = lcd_digit9
+            model = models/lcd_digit.osgt
+        lcd_digit1
+            parent = ROOT
+            position = 2.300000 -2.000000 2.000000
+            material = lcd_digit5
+            model = models/lcd_digit.osgt
+            selectable = 1
+        tile
+            parent = ROOT
+            position = 2.000000 -2.500000 4.000000
+            material = tile00
+            model = models/tile.osgt

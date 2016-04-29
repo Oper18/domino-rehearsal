@@ -18,6 +18,39 @@ material
         destination
             diffuse = pipeline/textures/destination_tex.png
             normal = pipeline/textures/destination_n.png
+        lcd_digit
+            diffuse = pipeline/textures/lcd_digit_tex.png
+            normal = pipeline/textures/lcd_digit_n.png
+        lcd_digit0
+            diffuse = pipeline/textures/lcd_digit_tex0.png
+            normal = pipeline/textures/lcd_digit_n.png
+        lcd_digit1
+            diffuse = pipeline/textures/lcd_digit_tex1.png
+            normal = pipeline/textures/lcd_digit_n.png
+        lcd_digit2
+            diffuse = pipeline/textures/lcd_digit_tex2.png
+            normal = pipeline/textures/lcd_digit_n.png
+        lcd_digit3
+            diffuse = pipeline/textures/lcd_digit_tex3.png
+            normal = pipeline/textures/lcd_digit_n.png
+        lcd_digit4
+            diffuse = pipeline/textures/lcd_digit_tex4.png
+            normal = pipeline/textures/lcd_digit_n.png
+        lcd_digit5
+            diffuse = pipeline/textures/lcd_digit_tex5.png
+            normal = pipeline/textures/lcd_digit_n.png
+        lcd_digit6
+            diffuse = pipeline/textures/lcd_digit_tex6.png
+            normal = pipeline/textures/lcd_digit_n.png
+        lcd_digit7
+            diffuse = pipeline/textures/lcd_digit_tex7.png
+            normal = pipeline/textures/lcd_digit_n.png
+        lcd_digit8
+            diffuse = pipeline/textures/lcd_digit_tex8.png
+            normal = pipeline/textures/lcd_digit_n.png
+        lcd_digit9
+            diffuse = pipeline/textures/lcd_digit_tex9.png
+            normal = pipeline/textures/lcd_digit_n.png
         tile00
             diffuse = pipeline/textures/tile_tex00.png
             normal = pipeline/textures/tile_n.png
