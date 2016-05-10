@@ -5,6 +5,7 @@ node
             parent = ROOT
             position = 0.000000 -10.000000 20.000000
             light = default
+            script = scripts/Main.py
         camera
             parent = ROOT
             position = -2.828758 -9.021199 10.723674
@@ -29,19 +30,37 @@ node
             position = 10.000000 0.000000 0.000000
             material = destination
             model = models/destination.osgt
-        lcd_digit0
-            parent = ROOT
-            position = 2.000000 -2.000000 2.000000
-            material = lcd_digit9
-            model = models/lcd_digit.osgt
-        lcd_digit1
-            parent = ROOT
-            position = 2.300000 -2.000000 2.000000
-            material = lcd_digit5
-            model = models/lcd_digit.osgt
-            selectable = 1
         tile
             parent = ROOT
             position = 2.000000 -2.500000 4.000000
             material = tile00
             model = models/tile.osgt
+        lcd
+            parent = ROOT
+            position = 0.000000 0.000000 2.000000
+            material = lcd_base
+            model = models/lcd_base.osgt
+            script = scripts/LCD.py
+        lcd_digit0
+            parent = lcd
+            position = -0.450000 0.000000 0.000000
+            material = lcd_digit
+            model = models/lcd_digit.osgt
+        lcd_digit1
+            parent = lcd
+            position = -0.150000 0.000000 0.000000
+            material = lcd_digit
+            model = models/lcd_digit.osgt
+            selectable = 1
+        lcd_digit2
+            parent = lcd
+            position = 0.150000 0.000000 0.000000
+            material = lcd_digit
+            model = models/lcd_digit.osgt
+            selectable = 1
+        lcd_digit3
+            parent = lcd
+            position = 0.450000 0.000000 0.000000
+            material = lcd_digit
+            model = models/lcd_digit.osgt
+            selectable = 1

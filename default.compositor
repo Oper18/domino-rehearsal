@@ -18,6 +18,9 @@ material
         destination
             diffuse = pipeline/textures/destination_tex.png
             normal = pipeline/textures/destination_n.png
+        lcd_base
+            diffuse = pipeline/textures/lcd_base_tex.png
+            normal = pipeline/textures/lcd_base_n.png
         lcd_digit
             diffuse = pipeline/textures/lcd_digit_tex.png
             normal = pipeline/textures/lcd_digit_n.png
