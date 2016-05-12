@@ -5,9 +5,6 @@ rotate
             point = 1000 0 360 0
 move
     default
-        liftTile
-            point = 0 0 0 0
-            point = 1000 0 0 2
         lowerTile
-            point = 0 0 0 0
-            point = 1000 0 0 -2
+            relative = 0
+            point = 200 0 0 0

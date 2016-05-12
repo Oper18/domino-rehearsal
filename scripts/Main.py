@@ -11,10 +11,15 @@ MAIN_TILE_MOVE_DOWN = "move.default.lowerTile"
 class MainImpl(object):
     def __init__(self, c):
         self.c = c
+        self.isStarted = False
     def __del__(self):
         self.c = None
     def onSpace(self, key, value):
-        print "Space pressed. Run start sequence"
+        print "Space pressed"
+        if (self.isStarted):
+            print "The game has already been started"
+            return
+        self.isStarted = True
         self.c.set("esequence.default.start.active", "1")
     def setClearLCD(self, key, value):
         self.c.set("lcd.$SCENE.$LCD.value", "")

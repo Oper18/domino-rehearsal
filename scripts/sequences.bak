@@ -1,0 +1,7 @@
+start
+    main.replayStartSound
+    main.provideRandomLCDValue
+    source.createTiles
+    filter.createTile
+    source.markTilesSelectable
+    main.clearLCD

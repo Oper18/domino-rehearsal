@@ -5,6 +5,7 @@ node
             parent = ROOT
             position = 0.000000 -10.000000 20.000000
             light = default
+            script = scripts/TileFactory.py
         camera
             parent = ROOT
             position = -4.438680 -10.999568 11.542428
@@ -14,6 +15,7 @@ node
             parent = ROOT
             material = source
             model = models/source.osgt
+            script = scripts/Source.py
         sourceLeaf0
             parent = source
             position = 0.000000 3.000000 0.000000
@@ -198,11 +200,6 @@ node
             material = leaf
             model = models/leaf.osgt
             selectable = 1
-        tile
-            parent = ROOT
-            position = 2.000000 -2.500000 4.000000
-            material = tile00
-            model = models/tile.osgt
         base
             parent = ROOT
             position = 5.500000 0.000000 -3.000000

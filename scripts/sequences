@@ -1,7 +1,16 @@
+createSourceTiles
+    source.createTile
+    source.dropLastCreatedTile
+    source.createTile
+    source.dropLastCreatedTile
+    source.createTile
+    source.dropLastCreatedTile
+    source.createTile
+    source.dropLastCreatedTile
+    source.createTile
+    source.dropLastCreatedTile
+    source.createTile
+    source.dropLastCreatedTile
 start
     main.replayStartSound
-    main.provideRandomLCDValue
     source.createTiles
-    filter.createTile
-    source.markTilesSelectable
-    main.clearLCD
