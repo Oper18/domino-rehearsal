@@ -1,4 +1,6 @@
 start
     main.replayStartSound
     main.moveTileUp
+    main.provideRandomLCDValue
     main.moveTileDown
+    main.clearLCD

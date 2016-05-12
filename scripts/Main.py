@@ -1,6 +1,8 @@
 
 from pymjin2 import *
 
+import random
+
 MAIN_LCD_NAME       = "lcd"
 MAIN_SOUND_START    = "soundBuffer.default.start"
 MAIN_TILE_MOVE_UP   = "move.default.liftTile"
@@ -14,8 +16,14 @@ class MainImpl(object):
     def onSpace(self, key, value):
         print "Space pressed. Run start sequence"
         self.c.set("esequence.default.start.active", "1")
-        # Set LCD value.
-        #self.c.set("lcd.$SCENE.$LCD.value", "273")
+    def setClearLCD(self, key, value):
+        self.c.set("lcd.$SCENE.$LCD.value", "")
+        self.c.report("main.clearLCD", "0")
+    def setProvideRandomLCDValue(self, key, value):
+        random.seed()
+        i = random.randint(0, 9999)
+        self.c.set("lcd.$SCENE.$LCD.value", str(i))
+        self.c.report("main.provideRandomLCDValue", "0")
     # moveTileDown.
     def onMoveTileDownFinish(self, key, value):
         print "onMoveTileDownFinish", key, value
@@ -71,6 +79,8 @@ class Main(object):
         self.c.provide("main.moveTileDown",     self.impl.setMoveTileDown)
         # replayStartSound.
         self.c.provide("main.replayStartSound", self.impl.setReplayStartSound)
+        self.c.provide("main.provideRandomLCDValue", self.impl.setProvideRandomLCDValue)
+        self.c.provide("main.clearLCD",         self.impl.setClearLCD)
 
         # Read sequence file.
         # TODO: Move to ESequence. Make it prettier.
