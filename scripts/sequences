@@ -1,0 +1,4 @@
+start
+    main.replayStartSound
+    main.moveTileUp
+    main.moveTileDown
