@@ -26,11 +26,9 @@ class MainImpl(object):
         self.c.report("main.provideRandomLCDValue", "0")
     # moveTileDown.
     def onMoveTileDownFinish(self, key, value):
-        print "onMoveTileDownFinish", key, value
         self.c.unlisten("$MOVE_TILE_DOWN.$SCENE.$NODE.active")
         self.c.report("main.moveTileDown", "0")
     def setMoveTileDown(self, key, value):
-        print "setMoveTileDown", key, value
         # Only accept activation value.
         if (value[0] != "1"):
             return
@@ -42,11 +40,9 @@ class MainImpl(object):
         self.c.set("$MOVE_TILE_DOWN.$SCENE.$NODE.active", "1")
     # moveTileUp.
     def onMoveTileUpFinish(self, key, value):
-        print "onMoveTileUpFinish", key, value
         self.c.unlisten("$MOVE_TILE_UP.$SCENE.$NODE.active")
         self.c.report("main.moveTileUp", "0")
     def setMoveTileUp(self, key, value):
-        print "setMoveTileUp", key, value
         # Only accept activation value.
         if (value[0] != "1"):
             return
@@ -58,7 +54,6 @@ class MainImpl(object):
         self.c.set("$MOVE_TILE_UP.$SCENE.$NODE.active", "1")
     # replayStartSound.
     def setReplayStartSound(self, key, value):
-        print "setReplayStartSound", key, value
         self.c.setConst("SNDSTART", MAIN_SOUND_START)
         self.c.set("$SNDSTART.state", "play")
         # We don't wait for its completion for simplicity.

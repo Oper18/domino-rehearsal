@@ -1,6 +1,7 @@
 start
     main.replayStartSound
-    main.moveTileUp
     main.provideRandomLCDValue
-    main.moveTileDown
+    source.createTiles
+    filter.createTile
+    source.markTilesSelectable
     main.clearLCD
