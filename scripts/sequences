@@ -19,4 +19,10 @@ start
     createSourceTiles
     filter.createTile
     filter.dropLastCreatedTile
-    source.markTilesSelectable
+    source.allowTileSelection
+sourceTileSelection
+    source.disallowTileSelection
+    source.alignSelectedTileWithFilter
+    main.provideRandomLCDValue
+    filter.alignFreeSlotWithSource
+    source.allowTileSelection

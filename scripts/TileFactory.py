@@ -26,9 +26,10 @@ class TileFactoryImpl(object):
         self.lastTileID = self.lastTileID + 1
         tileName = "tile{0}".format(self.lastTileID)
         self.c.setConst("TILE", tileName)
-        self.c.set("node.$SCENE.$TILE.parent",   "ROOT")
-        self.c.set("node.$SCENE.$TILE.model",    TILE_MODEL)
-        self.c.set("node.$SCENE.$TILE.material", self.randomTileMaterial())
+        self.c.set("node.$SCENE.$TILE.parent",     "ROOT")
+        self.c.set("node.$SCENE.$TILE.model",      TILE_MODEL)
+        self.c.set("node.$SCENE.$TILE.material",   self.randomTileMaterial())
+        self.c.set("node.$SCENE.$TILE.selectable", "1")
         return [tileName]
 
 class TileFactory(object):
