@@ -104,7 +104,18 @@ class Main(object):
         # Create sequences.
         for k, v in seqs.items():
             self.c.setConst("NAME", k)
-            self.c.set("esequence.default.$NAME.sequence", v)
+            # Process items.
+            items = []
+            for item in v:
+                # Environment API call.
+                if ("." in item):
+                    pass
+                # Another sequence.
+                else:
+                    item = "esequence.default.{0}.active".format(item)
+                items.append(item)
+            self.c.set("esequence.default.$NAME.sequence", items)
+
     def __del__(self):
         # Tear down.
         self.c.clear()

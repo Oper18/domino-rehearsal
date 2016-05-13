@@ -1,18 +1,22 @@
 createSourceTiles
     source.createTile
     source.dropLastCreatedTile
+    main.provideRandomLCDValue
     source.createTile
     source.dropLastCreatedTile
     source.createTile
     source.dropLastCreatedTile
     source.createTile
     source.dropLastCreatedTile
+    main.provideRandomLCDValue
     source.createTile
     source.dropLastCreatedTile
     source.createTile
     source.dropLastCreatedTile
+    main.provideRandomLCDValue
 start
     main.replayStartSound
-    source.createTiles
+    createSourceTiles
     filter.createTile
     filter.dropLastCreatedTile
+    source.markTilesSelectable

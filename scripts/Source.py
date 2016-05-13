@@ -3,7 +3,6 @@ from pymjin2 import *
 
 SOURCE_ACTION_DROP_TILE      = "move.default.lowerTile"
 SOURCE_LEAF_PREFIX           = "sourceLeaf"
-SOURCE_SEQUENCE_CREATE_TILES = "esequence.default.createSourceTiles"
 SOURCE_TILE_INITIAL_POS      = "0 0 9"
 
 class SourceImpl(object):
@@ -12,6 +11,7 @@ class SourceImpl(object):
         self.tiles = []
     def __del__(self):
         self.c = None
+    # createTile.
     def setCreateTile(self, key, value):
         id = len(self.tiles)
         # Create tile.
@@ -22,14 +22,6 @@ class SourceImpl(object):
         self.c.set("node.$SCENE.$TILE.position", SOURCE_TILE_INITIAL_POS)
         self.tiles.append(tileName)
         self.c.report("source.createTile", "0")
-    # createTiles.
-    def onTilesCreated(self, key, value):
-        self.c.unlisten("$SEQ.active")
-        self.c.report("source.createTiles", "0")
-    def setCreateTiles(self, key, value):
-        self.c.setConst("SEQ", SOURCE_SEQUENCE_CREATE_TILES)
-        self.c.listen("$SEQ.active", "0", self.onTilesCreated)
-        self.c.set("$SEQ.active", "1")
     # dropLastCreatedTile.
     def onTileDropped(self, key, value):
         self.c.unlisten("$DROP.$SCENE.$TILE.active")
@@ -39,6 +31,12 @@ class SourceImpl(object):
         self.c.setConst("DROP", SOURCE_ACTION_DROP_TILE)
         self.c.listen("$DROP.$SCENE.$TILE.active", "0", self.onTileDropped)
         self.c.set("$DROP.$SCENE.$TILE.active", "1")
+    # markTilesSelectable.
+    def setMarkTilesSelectable(self, key, value):
+        for tileName in self.tiles:
+            self.c.setConst("TILE", tileName)
+            self.c.set("node.$SCENE.$TILE.selectable", "1")
+        self.c.report("source.markTilesSelectable", "0")
 
 class Source(object):
     def __init__(self, sceneName, nodeName, env):
@@ -47,9 +45,10 @@ class Source(object):
         self.c.setConst("SCENE",  sceneName)
         self.c.setConst("NODE",   nodeName)
         self.c.provide("source.createTile",  self.impl.setCreateTile)
-        self.c.provide("source.createTiles", self.impl.setCreateTiles)
         self.c.provide("source.dropLastCreatedTile",
                        self.impl.setDropLastCreatedTile)
+        self.c.provide("source.markTilesSelectable",
+                       self.impl.setMarkTilesSelectable)
     def __del__(self):
         # Tear down.
         self.c.clear()
