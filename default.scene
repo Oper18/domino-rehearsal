@@ -75,6 +75,7 @@ node
             position = 5.500000 0.000000 -2.000000
             material = filter
             model = models/filter.osgt
+            script = scripts/Filter.py
         filterLeaf0
             parent = filter
             position = 0.000000 2.500000 0.000000
