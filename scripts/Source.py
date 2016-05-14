@@ -3,6 +3,7 @@ from pymjin2 import *
 
 SOURCE_ACTION_DROP_TILE      = "move.default.lowerTile"
 SOURCE_ACTION_ROTATE         = "rotate.default.rotateSource"
+SOURCE_FILTER_NAME           = "filter"
 SOURCE_LEAF_PREFIX           = "sourceLeaf"
 SOURCE_SEQUENCE_SELECTION    = "esequence.default.sourceTileSelection"
 SOURCE_TILE_INITIAL_POS      = "0 0 9"
@@ -15,6 +16,8 @@ class SourceImpl(object):
         self.lastSelectedTileName = None
     def __del__(self):
         self.c = None
+    def getLastSelectedTile(self, key):
+        return [self.lastSelectedTileName]
     # alignSelectedTileWithFilter.
     def onAlignFinish(self, key, value):
         self.c.unlisten("$ROTATE.$SCENE.$NODE.active")
@@ -25,6 +28,8 @@ class SourceImpl(object):
         self.c.report("source.dropLastCreatedTile", "0")
     def onTileSelection(self, key, value):
         self.lastSelectedTileName = key[2]
+        # Also save the value in the shared storage.
+        self.c.set("storage.lastSelectedSourceTile", self.lastSelectedTileName)
         self.c.setConst("SEQ", SOURCE_SEQUENCE_SELECTION)
         self.c.set("$SEQ.active", "1")
     def prepareTargetRotation(self):
@@ -100,6 +105,9 @@ class Source(object):
                        self.impl.setDisallowTileSelection)
         self.c.provide("source.dropLastCreatedTile",
                        self.impl.setDropLastCreatedTile)
+        self.c.provide("source.lastSelectedTile",
+                       None,
+                       self.impl.getLastSelectedTile)
     def __del__(self):
         # Tear down.
         self.c.clear()

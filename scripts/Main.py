@@ -21,6 +21,10 @@ class MainImpl(object):
             return
         self.isStarted = True
         self.c.set("esequence.default.start.active", "1")
+    def setAssignSelectedSourceTileToFilter(self, key, value):
+        tileName = self.c.get("source.lastSelectedTile")[0]
+        self.c.set("filter.acceptTile", tileName)
+        self.c.report("main.assignSelectedSourceTileToFilter", "0")
     def setClearLCD(self, key, value):
         self.c.set("lcd.$SCENE.$LCD.value", "")
         self.c.report("main.clearLCD", "0")
@@ -29,34 +33,6 @@ class MainImpl(object):
         i = random.randint(0, 9999)
         self.c.set("lcd.$SCENE.$LCD.value", str(i))
         self.c.report("main.provideRandomLCDValue", "0")
-    # moveTileDown.
-    def onMoveTileDownFinish(self, key, value):
-        self.c.unlisten("$MOVE_TILE_DOWN.$SCENE.$NODE.active")
-        self.c.report("main.moveTileDown", "0")
-    def setMoveTileDown(self, key, value):
-        # Only accept activation value.
-        if (value[0] != "1"):
-            return
-        # Subscribe to the action finish.
-        self.c.setConst("MOVE_TILE_DOWN", MAIN_TILE_MOVE_DOWN)
-        self.c.setConst("NODE", "tile")
-        self.c.listen("$MOVE_TILE_DOWN.$SCENE.$NODE.active", "0", self.onMoveTileDownFinish)
-        # Activate action.
-        self.c.set("$MOVE_TILE_DOWN.$SCENE.$NODE.active", "1")
-    # moveTileUp.
-    def onMoveTileUpFinish(self, key, value):
-        self.c.unlisten("$MOVE_TILE_UP.$SCENE.$NODE.active")
-        self.c.report("main.moveTileUp", "0")
-    def setMoveTileUp(self, key, value):
-        # Only accept activation value.
-        if (value[0] != "1"):
-            return
-        # Subscribe to the action finish.
-        self.c.setConst("MOVE_TILE_UP", MAIN_TILE_MOVE_UP)
-        self.c.setConst("NODE", "tile")
-        self.c.listen("$MOVE_TILE_UP.$SCENE.$NODE.active", "0", self.onMoveTileUpFinish)
-        # Activate action.
-        self.c.set("$MOVE_TILE_UP.$SCENE.$NODE.active", "1")
     # replayStartSound.
     def setReplayStartSound(self, key, value):
         self.c.setConst("SNDSTART", MAIN_SOUND_START)
@@ -72,15 +48,11 @@ class Main(object):
         self.c.setConst("LCD",      MAIN_LCD_NAME)
         self.c.listen("input.SPACE.key", "1", self.impl.onSpace)
 
-        # Sequences test. Provide global game API.
-        # moveTileUp.
-        self.c.provide("main.moveTileUp",       self.impl.setMoveTileUp)
-        # moveTileDown.
-        self.c.provide("main.moveTileDown",     self.impl.setMoveTileDown)
-        # replayStartSound.
-        self.c.provide("main.replayStartSound", self.impl.setReplayStartSound)
-        self.c.provide("main.provideRandomLCDValue", self.impl.setProvideRandomLCDValue)
+        self.c.provide("main.assignSelectedSourceTileToFilter",
+                       self.impl.setAssignSelectedSourceTileToFilter)
         self.c.provide("main.clearLCD",         self.impl.setClearLCD)
+        self.c.provide("main.provideRandomLCDValue", self.impl.setProvideRandomLCDValue)
+        self.c.provide("main.replayStartSound", self.impl.setReplayStartSound)
 
         # Read sequence file.
         # TODO: Move to ESequence. Make it prettier.

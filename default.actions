@@ -11,3 +11,6 @@ move
         lowerTile
             relative = 0
             point = 200 0 0 0
+        dropFilterTile
+            relative = 0
+            point = 200 0 0 0

@@ -25,4 +25,6 @@ sourceTileSelection
     source.alignSelectedTileWithFilter
     main.provideRandomLCDValue
     filter.alignFreeSlotWithSource
+    main.assignSelectedSourceTileToFilter
+    filter.dropLastAcceptedTile
     source.allowTileSelection

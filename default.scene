@@ -5,6 +5,8 @@ node
             parent = ROOT
             position = 0.000000 -10.000000 20.000000
             light = default
+        tileFactory
+            parent = light
             script = scripts/TileFactory.py
         camera
             parent = ROOT
