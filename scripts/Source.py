@@ -6,12 +6,15 @@ SOURCE_ACTION_ROTATE         = "rotate.default.rotateSource"
 SOURCE_FILTER_NAME           = "filter"
 SOURCE_LEAF_PREFIX           = "sourceLeaf"
 SOURCE_SEQUENCE_SELECTION    = "esequence.default.sourceTileSelection"
+SOURCE_SLOTS_NB              = 6
 SOURCE_TILE_INITIAL_POS      = "0 0 9"
 
 class SourceImpl(object):
     def __init__(self, c):
         self.c = c
-        self.tiles = []
+        self.tiles = {}
+        for i in xrange(0, SOURCE_SLOTS_NB):
+            self.tiles[i] = None
         self.rotationSpeed = None
         self.lastSelectedTileName = None
     def __del__(self):
@@ -28,18 +31,15 @@ class SourceImpl(object):
         self.c.report("source.dropLastCreatedTile", "0")
     def onTileSelection(self, key, value):
         self.lastSelectedTileName = key[2]
-        # Also save the value in the shared storage.
-        self.c.set("storage.lastSelectedSourceTile", self.lastSelectedTileName)
         self.c.setConst("SEQ", SOURCE_SEQUENCE_SELECTION)
         self.c.set("$SEQ.active", "1")
     def prepareTargetRotation(self):
         # Convert tile name to slot ID.
-        i = 0
         slotID = None
-        for tileName in self.tiles:
-            if (tileName == self.lastSelectedTileName):
-                slotID = i
-            i = i + 1
+        for slot, tile in self.tiles.items():
+            if (tile == self.lastSelectedTileName):
+                slotID = slot
+                break
         # Set new rotation.
         r = -60 * slotID - 90
         self.c.set("$ROTATE.point",
@@ -58,37 +58,49 @@ class SourceImpl(object):
         self.c.set("$ROTATE.$SCENE.$NODE.active", "1")
     # allowTileSelection.
     def setAllowTileSelection(self, key, value):
-        print "allowTileSelection"
-        for tileName in self.tiles:
-            self.c.setConst("TILE", tileName)
-            self.c.listen("node.$SCENE.$TILE.selected",
-                          "1",
-                          self.onTileSelection)
+        for slot, tile in self.tiles.items():
+            if (tile is not None):
+                self.c.setConst("TILE", tile)
+                self.c.listen("node.$SCENE.$TILE.selected",
+                              "1",
+                              self.onTileSelection)
         self.c.report("source.allowTileSelection", "0")
     # createTile.
     def setCreateTile(self, key, value):
-        id = len(self.tiles)
+        slotID = None
+        # Find free slot.
+        for slot, tile in self.tiles.items():
+            if (tile is None):
+                slotID = slot
+                break
         # Create tile.
         tileName = self.c.get("tileFactory.createTile")[0]
         # Attach to leaf.
         self.c.setConst("TILE", tileName)
-        self.c.set("node.$SCENE.$TILE.parent",   SOURCE_LEAF_PREFIX + str(id))
+        self.c.set("node.$SCENE.$TILE.parent",   SOURCE_LEAF_PREFIX + str(slotID))
         self.c.set("node.$SCENE.$TILE.position", SOURCE_TILE_INITIAL_POS)
-        self.tiles.append(tileName)
+        self.tiles[slotID] = tileName
         self.c.report("source.createTile", "0")
     # disallowTileSelection.
     def setDisallowTileSelection(self, key, value):
-        for tileName in self.tiles:
-            self.c.setConst("TILE", tileName)
-            self.c.unlisten("node.$SCENE.$TILE.selected")
+        for slot, tile in self.tiles.items():
+            if (tile is not None):
+                self.c.setConst("TILE", tile)
+                self.c.unlisten("node.$SCENE.$TILE.selected")
         self.c.report("source.disallowTileSelection", "0")
     # dropLastCreatedTile.
     def setDropLastCreatedTile(self, key, value):
-        # TODO: Update free slot location algorithm.
-        tileName = self.tiles[len(self.tiles) - 1]
+        # TILE const has been set during creation.
         self.c.setConst("DROP", SOURCE_ACTION_DROP_TILE)
         self.c.listen("$DROP.$SCENE.$TILE.active", "0", self.onTileDropped)
         self.c.set("$DROP.$SCENE.$TILE.active", "1")
+    # removeSelectedTile.
+    def setRemoveSelectedTile(self, key, value):
+        for slot, tile in self.tiles.items():
+            if (tile == self.lastSelectedTileName):
+                self.tiles[slot] = None
+                self.lastSelectedTileName = None
+                break
 
 class Source(object):
     def __init__(self, sceneName, nodeName, env):
@@ -108,6 +120,8 @@ class Source(object):
         self.c.provide("source.lastSelectedTile",
                        None,
                        self.impl.getLastSelectedTile)
+        self.c.provide("source.removeSelectedTile",
+                       self.impl.setRemoveSelectedTile)
     def __del__(self):
         # Tear down.
         self.c.clear()

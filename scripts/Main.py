@@ -23,6 +23,7 @@ class MainImpl(object):
         self.c.set("esequence.default.start.active", "1")
     def setAssignSelectedSourceTileToFilter(self, key, value):
         tileName = self.c.get("source.lastSelectedTile")[0]
+        self.c.set("source.removeSelectedTile", "1")
         self.c.set("filter.acceptTile", tileName)
         self.c.report("main.assignSelectedSourceTileToFilter", "0")
     def setClearLCD(self, key, value):

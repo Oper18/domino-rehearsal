@@ -19,10 +19,8 @@ class TileFactoryImpl(object):
         # TODO: not all pairs exist.
         i = random.randint(TILE_VALUE_MIN, TILE_VALUE_MAX)
         mat = "{0}{1}{2}".format(TILE_MATERIAL_PREFIX, i, i)
-        print "material", mat
         return mat
     def getCreateTile(self, key):
-        print "getCreateTile", key
         self.lastTileID = self.lastTileID + 1
         tileName = "tile{0}".format(self.lastTileID)
         self.c.setConst("TILE", tileName)

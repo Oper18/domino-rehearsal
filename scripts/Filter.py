@@ -1,13 +1,15 @@
 
 from pymjin2 import *
 
-FILTER_ACTION_DROP_ACCEPTED_TILE = "move.default.dropFilterTile"
-FILTER_ACTION_DROP_NEW_TILE      = "move.default.lowerTile"
-FILTER_ACTION_ROTATE             = "rotate.default.rotateFilter"
-FILTER_LEAF_FILTER_ID            = 0
-FILTER_LEAF_PREFIX               = "filterLeaf"
-FILTER_SLOTS_NB                  = 3
-FILTER_TILE_INITIAL_POS          = "0 0 11"
+FILTER_ACTION_DROP_ACCEPTED_TILE  = "move.default.dropFilterTile"
+FILTER_ACTION_DROP_NEW_TILE       = "move.default.lowerTile"
+FILTER_ACTION_DROP_UNMATCHED_TILE = "move.default.dropUnmatchedTile"
+FILTER_ACTION_ROTATE              = "rotate.default.rotateFilter"
+FILTER_LEAF_FILTER_ID             = 0
+FILTER_LEAF_PREFIX                = "filterLeaf"
+FILTER_SLOTS_NB                   = 3
+FILTER_SEQUENCE_ALGORITHM_FAILURE = "esequence.default.algorithmFailure"
+FILTER_TILE_INITIAL_POS           = "0 0 11"
 
 class FilterImpl(object):
     def __init__(self, c):
@@ -30,6 +32,10 @@ class FilterImpl(object):
     def onAcceptedTileDropped(self, key, value):
         self.c.unlisten("$DROP.$SCENE.$TILE.active")
         self.c.report("filter.dropLastAcceptedTile", "0")
+    # ifNoFreeSlotsPerformAlgorithm.
+    def onAlgorithmFinish(self, key, value):
+        self.c.unlisten("$SEQ.active")
+        self.c.report("filter.ifNoFreeSlotsPerformAlgorithm", "0")
     # alignFreeSlotWithSource.
     def onAlignFinish(self, key, value):
         self.c.unlisten("$ROTATE.$SCENE.$NODE.active")
@@ -38,6 +44,14 @@ class FilterImpl(object):
     def onTileDropped(self, key, value):
         self.c.unlisten("$DROP.$SCENE.$TILE.active")
         self.c.report("filter.dropLastCreatedTile", "0")
+    # returnToInitialRotation.
+    def onReturnToInitialRotationFinish(self, key, value):
+        self.c.unlisten("$ROTATE.$SCENE.$NODE.active")
+        self.c.report("filter.returnToInitialRotation", "0")
+    # dropUnmatchedTile.
+    def onUnmatchedTileDropped(self, key, value):
+        self.c.unlisten("$DROP.$SCENE.$TILE.active")
+        self.c.report("filter.dropUnmatchedTile", "0")
     def prepareTargetRotation(self):
         # Set new rotation.
         r = 90 - 120 * self.lastFreeSlotID
@@ -73,9 +87,12 @@ class FilterImpl(object):
         self.c.set("node.$SCENE.$TILE.position", FILTER_TILE_INITIAL_POS)
         self.tiles[FILTER_LEAF_FILTER_ID] = tileName
         self.c.report("filter.createTile", "0")
+    # destroyUnmatchedTile.
+    def setDestroyUnmatchedTile(self, key, value):
+        self.c.set("node.$SCENE.$TILE.parent", "")
+        self.c.report("filter.destroyUnmatchedTile", "0")
     # dropLastAcceptedTile.
     def setDropLastAcceptedTile(self, key, value):
-        print "droplast accepted tile", self.lastAcceptedTile
         self.c.setConst("DROP", FILTER_ACTION_DROP_ACCEPTED_TILE)
         self.c.listen("$DROP.$SCENE.$TILE.active",
                       "0",
@@ -91,6 +108,47 @@ class FilterImpl(object):
         self.c.setConst("DROP", FILTER_ACTION_DROP_NEW_TILE)
         self.c.listen("$DROP.$SCENE.$TILE.active", "0", self.onTileDropped)
         self.c.set("$DROP.$SCENE.$TILE.active", "1")
+    # dropUnmatchedTile.
+    def setDropUnmatchedTile(self, key, value):
+        tileName = None
+        for slot, tile in self.tiles.items():
+            if (slot == FILTER_LEAF_FILTER_ID):
+                continue
+            if (tile is not None):
+                tileName = tile
+                self.tiles[slot] = None
+                break
+        self.c.setConst("DROP", FILTER_ACTION_DROP_UNMATCHED_TILE)
+        self.c.setConst("TILE", tileName)
+        self.c.listen("$DROP.$SCENE.$TILE.active", "0", self.onUnmatchedTileDropped)
+        self.c.set("$DROP.$SCENE.$TILE.active", "1")
+    # ifNoFreeSlotsPerformAlgorithm.
+    def setIfNoFreeSlotsPerformAlgorithm(self, key, value):
+        # Make sure there are no free slots.
+        full = True
+        for slot, tile in self.tiles.items():
+            if (tile is None):
+                full = False
+                break
+        # Do nothing if any slot is empty.
+        if (not full):
+            self.c.report("filter.ifNoFreeSlotsPerformAlgorithm", "0")
+            return
+        # Perform algorithm.
+        # TODO: perform it.
+
+        # Run failure sequence.
+        self.c.setConst("SEQ", FILTER_SEQUENCE_ALGORITHM_FAILURE)
+        self.c.listen("$SEQ.active", "0", self.onAlgorithmFinish)
+        self.c.set("$SEQ.active", "1")
+    # returnToInitialRotation.
+    def setReturnToInitialRotation(self, key, value):
+        # Set initial rotation.
+        self.c.set("$ROTATE.point", "{0} 0 0 0".format(self.rotationSpeed))
+        self.c.listen("$ROTATE.$SCENE.$NODE.active",
+                      "0",
+                      self.onReturnToInitialRotationFinish)
+        self.c.set("$ROTATE.$SCENE.$NODE.active", "1")
 
 class Filter(object):
     def __init__(self, sceneName, nodeName, env):
@@ -102,10 +160,18 @@ class Filter(object):
         self.c.provide("filter.alignFreeSlotWithSource",
                        self.impl.setAlignFreeSlotWithSource)
         self.c.provide("filter.createTile",  self.impl.setCreateTile)
+        self.c.provide("filter.destroyUnmatchedTile",
+                       self.impl.setDestroyUnmatchedTile)
         self.c.provide("filter.dropLastAcceptedTile",
                        self.impl.setDropLastAcceptedTile)
         self.c.provide("filter.dropLastCreatedTile",
                        self.impl.setDropLastCreatedTile)
+        self.c.provide("filter.dropUnmatchedTile",
+                       self.impl.setDropUnmatchedTile)
+        self.c.provide("filter.ifNoFreeSlotsPerformAlgorithm",
+                       self.impl.setIfNoFreeSlotsPerformAlgorithm)
+        self.c.provide("filter.returnToInitialRotation",
+                       self.impl.setReturnToInitialRotation)
     def __del__(self):
         # Tear down.
         self.c.clear()

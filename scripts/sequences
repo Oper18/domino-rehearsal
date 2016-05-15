@@ -27,4 +27,15 @@ sourceTileSelection
     filter.alignFreeSlotWithSource
     main.assignSelectedSourceTileToFilter
     filter.dropLastAcceptedTile
+    filter.ifNoFreeSlotsPerformAlgorithm
     source.allowTileSelection
+algorithmFailure
+    filter.returnToInitialRotation
+    filter.dropUnmatchedTile
+    filter.destroyUnmatchedTile
+    filter.dropUnmatchedTile
+    filter.destroyUnmatchedTile
+    source.createTile
+    source.dropLastCreatedTile
+    source.createTile
+    source.dropLastCreatedTile
