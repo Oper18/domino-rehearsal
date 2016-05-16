@@ -39,3 +39,6 @@ algorithmFailure
     source.dropLastCreatedTile
     source.createTile
     source.dropLastCreatedTile
+algorithmSuccess
+    filter.alignUsedSlotWithDestination
+    destination.alignFreeSlotWithFilter

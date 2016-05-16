@@ -9,6 +9,7 @@ FILTER_LEAF_FILTER_ID             = 0
 FILTER_LEAF_PREFIX                = "filterLeaf"
 FILTER_SLOTS_NB                   = 3
 FILTER_SEQUENCE_ALGORITHM_FAILURE = "esequence.default.algorithmFailure"
+FILTER_SEQUENCE_ALGORITHM_SUCCESS = "esequence.default.algorithmSuccess"
 FILTER_TILE_INITIAL_POS           = "0 0 11"
 
 class FilterImpl(object):
@@ -19,6 +20,7 @@ class FilterImpl(object):
             self.tiles[i] = None
         self.lastAcceptedTile = None
         self.lastFreeSlotID = None
+        self.lastUsedSlotID = None
         self.rotationSpeed = None
     def __del__(self):
         self.c = None
@@ -27,6 +29,15 @@ class FilterImpl(object):
         for slot, tile in self.tiles.items():
             if (tile is None):
                 self.lastFreeSlotID = slot
+                break
+    def findUsedSlot(self):
+        self.lastUsedSlotID = None
+        for slot, tile in self.tiles.items():
+            # Ignore filter slot.
+            if (slot == FILTER_LEAF_FILTER_ID):
+                continue
+            if (tile is not None):
+                self.lastUsedSlotID = slot
                 break
     # dropLastAcceptedTile.
     def onAcceptedTileDropped(self, key, value):
@@ -40,6 +51,10 @@ class FilterImpl(object):
     def onAlignFinish(self, key, value):
         self.c.unlisten("$ROTATE.$SCENE.$NODE.active")
         self.c.report("filter.alignFreeSlotWithSource", "0")
+    # alignUsedSlotWithDestination.
+    def onAlignDstFinish(self, key, value):
+        self.c.unlisten("$ROTATE.$SCENE.$NODE.active")
+        self.c.report("filter.alignUsedSlotWithDestination", "0")
     # dropLastCreatedTile.
     def onTileDropped(self, key, value):
         self.c.unlisten("$DROP.$SCENE.$TILE.active")
@@ -63,6 +78,11 @@ class FilterImpl(object):
         self.c.setConst("ROTATE", FILTER_ACTION_ROTATE)
         p = self.c.get("$ROTATE.point")[0]
         self.rotationSpeed = p.split(" ")[0]
+    def prepareRotationToDst(self):
+        # Set new rotation.
+        r = 90 - 120 * self.lastUsedSlotID + 180
+        self.c.set("$ROTATE.point",
+                   "{0} 0 0 {1}".format(self.rotationSpeed, r))
     def setAcceptTile(self, key, value):
         self.lastAcceptedTile = value[0]
         self.tiles[self.lastFreeSlotID] = self.lastAcceptedTile
@@ -75,6 +95,12 @@ class FilterImpl(object):
         self.findFreeSlot()
         self.prepareTargetRotation()
         self.c.listen("$ROTATE.$SCENE.$NODE.active", "0", self.onAlignFinish)
+        self.c.set("$ROTATE.$SCENE.$NODE.active", "1")
+    # alignUsedSlotWithDestination.
+    def setAlignUsedSlotWithDestination(self, key, value):
+        self.findUsedSlot()
+        self.prepareRotationToDst()
+        self.c.listen("$ROTATE.$SCENE.$NODE.active", "0", self.onAlignDstFinish)
         self.c.set("$ROTATE.$SCENE.$NODE.active", "1")
     # createTile.
     def setCreateTile(self, key, value):
@@ -135,12 +161,33 @@ class FilterImpl(object):
             self.c.report("filter.ifNoFreeSlotsPerformAlgorithm", "0")
             return
         # Perform algorithm.
-        # TODO: perform it.
-
+        # THIS IS A SIMPLIFIED MATCHING ALGORITHM: simply check
+        # if all tiles are equal.
+        # TODO: rewrite to use full version of the algorithm.
+        # Use tile material to compare equality.
+        # It's ugly, but fine for now.
+        lastTileMat = None
+        allTilesAreEqual = True
+        for slot, tile in self.tiles.items():
+            self.c.setConst("TILE", tile)
+            mat = self.c.get("node.$SCENE.$TILE.material")[0]
+            if (lastTileMat is None):
+                lastTileMat = mat
+            elif (lastTileMat != mat):
+                allTilesAreEqual = False
+                break
+        # Run success sequence.
+        if (allTilesAreEqual):
+            print "ALGORITHM: All tiles are equal"
+            self.c.setConst("SEQ", FILTER_SEQUENCE_ALGORITHM_SUCCESS)
+            self.c.listen("$SEQ.active", "0", self.onAlgorithmFinish)
+            self.c.set("$SEQ.active", "1")
         # Run failure sequence.
-        self.c.setConst("SEQ", FILTER_SEQUENCE_ALGORITHM_FAILURE)
-        self.c.listen("$SEQ.active", "0", self.onAlgorithmFinish)
-        self.c.set("$SEQ.active", "1")
+        else:
+            print "ALGORITHM: Tiles are NOT equal"
+            self.c.setConst("SEQ", FILTER_SEQUENCE_ALGORITHM_FAILURE)
+            self.c.listen("$SEQ.active", "0", self.onAlgorithmFinish)
+            self.c.set("$SEQ.active", "1")
     # returnToInitialRotation.
     def setReturnToInitialRotation(self, key, value):
         # Set initial rotation.
@@ -159,6 +206,8 @@ class Filter(object):
         self.c.provide("filter.acceptTile", self.impl.setAcceptTile)
         self.c.provide("filter.alignFreeSlotWithSource",
                        self.impl.setAlignFreeSlotWithSource)
+        self.c.provide("filter.alignUsedSlotWithDestination",
+                       self.impl.setAlignUsedSlotWithDestination)
         self.c.provide("filter.createTile",  self.impl.setCreateTile)
         self.c.provide("filter.destroyUnmatchedTile",
                        self.impl.setDestroyUnmatchedTile)

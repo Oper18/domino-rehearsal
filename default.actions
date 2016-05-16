@@ -1,11 +1,14 @@
 rotate
     default
+        rotateDestination
+            relative = 0
+            point = 1000 0 0 0
         rotateFilter
             relative = 0
-            point = 800 0 0 0
+            point = 1000 0 0 0
         rotateSource
             relative = 0
-            point = 800 0 0 0
+            point = 1000 0 0 0
 move
     default
         lowerTile

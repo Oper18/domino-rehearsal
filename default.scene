@@ -108,6 +108,7 @@ node
             position = 12.100000 0.000000 0.000000
             material = destination
             model = models/destination.osgt
+            script = scripts/Destination.py
         destinationLeaf0
             parent = destination
             position = 0.000000 4.100000 0.000000
