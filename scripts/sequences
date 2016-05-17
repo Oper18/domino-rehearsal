@@ -42,3 +42,13 @@ algorithmFailure
 algorithmSuccess
     filter.alignUsedSlotWithDestination
     destination.alignFreeSlotWithFilter
+    main.assignFilterTileToDestination
+    destination.liftLastAcceptedTile
+    filter.alignUsedSlotWithDestination
+    destination.alignFreeSlotWithFilter
+    main.assignFilterTileToDestination
+    destination.liftLastAcceptedTile
+    source.createTile
+    source.dropLastCreatedTile
+    source.createTile
+    source.dropLastCreatedTile

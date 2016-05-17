@@ -11,6 +11,9 @@ rotate
             point = 1000 0 0 0
 move
     default
+        liftTile
+            relative = 0
+            point = 500 0 0 0
         lowerTile
             relative = 0
             point = 200 0 0 0

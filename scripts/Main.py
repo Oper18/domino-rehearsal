@@ -21,6 +21,11 @@ class MainImpl(object):
             return
         self.isStarted = True
         self.c.set("esequence.default.start.active", "1")
+    def setAssignFilterTileToDestination(self, key, value):
+        tileName = self.c.get("filter.lastUsedTile")[0]
+        self.c.set("filter.removeUsedTile", "1")
+        self.c.set("destination.acceptTile", tileName)
+        self.c.report("main.assignFilterTileToDestination", "0")
     def setAssignSelectedSourceTileToFilter(self, key, value):
         tileName = self.c.get("source.lastSelectedTile")[0]
         self.c.set("source.removeSelectedTile", "1")
@@ -49,6 +54,8 @@ class Main(object):
         self.c.setConst("LCD",      MAIN_LCD_NAME)
         self.c.listen("input.SPACE.key", "1", self.impl.onSpace)
 
+        self.c.provide("main.assignFilterTileToDestination",
+                       self.impl.setAssignFilterTileToDestination)
         self.c.provide("main.assignSelectedSourceTileToFilter",
                        self.impl.setAssignSelectedSourceTileToFilter)
         self.c.provide("main.clearLCD",         self.impl.setClearLCD)

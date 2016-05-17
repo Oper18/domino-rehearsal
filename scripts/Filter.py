@@ -39,6 +39,9 @@ class FilterImpl(object):
             if (tile is not None):
                 self.lastUsedSlotID = slot
                 break
+    # lastUsedTile.
+    def getLastUsedTile(self, key):
+        return [self.tiles[self.lastUsedSlotID]]
     # dropLastAcceptedTile.
     def onAcceptedTileDropped(self, key, value):
         self.c.unlisten("$DROP.$SCENE.$TILE.active")
@@ -83,6 +86,7 @@ class FilterImpl(object):
         r = 90 - 120 * self.lastUsedSlotID + 180
         self.c.set("$ROTATE.point",
                    "{0} 0 0 {1}".format(self.rotationSpeed, r))
+    # acceptTile.
     def setAcceptTile(self, key, value):
         self.lastAcceptedTile = value[0]
         self.tiles[self.lastFreeSlotID] = self.lastAcceptedTile
@@ -178,16 +182,21 @@ class FilterImpl(object):
                 break
         # Run success sequence.
         if (allTilesAreEqual):
-            print "ALGORITHM: All tiles are equal"
             self.c.setConst("SEQ", FILTER_SEQUENCE_ALGORITHM_SUCCESS)
             self.c.listen("$SEQ.active", "0", self.onAlgorithmFinish)
             self.c.set("$SEQ.active", "1")
         # Run failure sequence.
         else:
-            print "ALGORITHM: Tiles are NOT equal"
             self.c.setConst("SEQ", FILTER_SEQUENCE_ALGORITHM_FAILURE)
             self.c.listen("$SEQ.active", "0", self.onAlgorithmFinish)
             self.c.set("$SEQ.active", "1")
+    # removeUsedTile.
+    def setRemoveUsedTile(self, key, value):
+        for slot, tile in self.tiles.items():
+            if (slot == self.lastUsedSlotID):
+                self.tiles[slot] = None
+                self.lastUsedSlotID = None
+                break
     # returnToInitialRotation.
     def setReturnToInitialRotation(self, key, value):
         # Set initial rotation.
@@ -219,6 +228,8 @@ class Filter(object):
                        self.impl.setDropUnmatchedTile)
         self.c.provide("filter.ifNoFreeSlotsPerformAlgorithm",
                        self.impl.setIfNoFreeSlotsPerformAlgorithm)
+        self.c.provide("filter.lastUsedTile", None, self.impl.getLastUsedTile)
+        self.c.provide("filter.removeUsedTile", self.impl.setRemoveUsedTile)
         self.c.provide("filter.returnToInitialRotation",
                        self.impl.setReturnToInitialRotation)
     def __del__(self):
