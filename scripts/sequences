@@ -21,6 +21,7 @@ start
     filter.dropLastCreatedTile
     source.allowTileSelection
 sourceTileSelection
+    destination.disallowTileSelection
     source.disallowTileSelection
     source.alignSelectedTileWithFilter
     main.provideRandomLCDValue
@@ -52,3 +53,13 @@ algorithmSuccess
     source.dropLastCreatedTile
     source.createTile
     source.dropLastCreatedTile
+    destination.allowTileSelection
+destinationTileSelection
+    destination.disallowTileSelection
+    filter.alignFilterSlotWithDestination
+    destination.alignFreeSlotWithFilter
+    main.assignFilterTileToDestination
+    destination.liftLastAcceptedTile
+    destination.alignSelectedTileWithFilter
+    main.assignSelectedDestinationTileToFilter
+    filter.dropLastAcceptedTile

@@ -26,6 +26,16 @@ class MainImpl(object):
         self.c.set("filter.removeUsedTile", "1")
         self.c.set("destination.acceptTile", tileName)
         self.c.report("main.assignFilterTileToDestination", "0")
+    def setAssignSelectedDestinationTileToFilter(self, key, value):
+        print "01.assign dst->flt"
+        tileName = self.c.get("destination.lastSelectedTile")[0]
+        print "02.assign dst->flt"
+        self.c.set("destination.removeSelectedTile", "1")
+        print "03.assign dst->flt"
+        self.c.set("filter.acceptTile", tileName)
+        print "04.assign dst->flt"
+        self.c.report("main.assignSelectedDestinationTileToFilter", "0")
+        print "05.assign dst->flt"
     def setAssignSelectedSourceTileToFilter(self, key, value):
         tileName = self.c.get("source.lastSelectedTile")[0]
         self.c.set("source.removeSelectedTile", "1")
@@ -56,6 +66,8 @@ class Main(object):
 
         self.c.provide("main.assignFilterTileToDestination",
                        self.impl.setAssignFilterTileToDestination)
+        self.c.provide("main.assignSelectedDestinationTileToFilter",
+                       self.impl.setAssignSelectedDestinationTileToFilter)
         self.c.provide("main.assignSelectedSourceTileToFilter",
                        self.impl.setAssignSelectedSourceTileToFilter)
         self.c.provide("main.clearLCD",         self.impl.setClearLCD)

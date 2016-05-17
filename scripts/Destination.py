@@ -1,10 +1,11 @@
 
 from pymjin2 import *
 
-DESTINATION_ACTION_LIFT_TILE = "move.default.liftTile"
-DESTINATION_ACTION_ROTATE    = "rotate.default.rotateDestination"
-DESTINATION_LEAF_PREFIX      = "destinationLeaf"
-DESTINATION_SLOTS_NB         = 10
+DESTINATION_ACTION_LIFT_TILE   = "move.default.liftTile"
+DESTINATION_ACTION_ROTATE      = "rotate.default.rotateDestination"
+DESTINATION_LEAF_PREFIX        = "destinationLeaf"
+DESTINATION_SEQUENCE_SELECTION = "esequence.default.destinationTileSelection"
+DESTINATION_SLOTS_NB           = 10
 
 class DestinationImpl(object):
     def __init__(self, c):
@@ -13,6 +14,7 @@ class DestinationImpl(object):
         for i in xrange(0, DESTINATION_SLOTS_NB):
             self.tiles[i] = None
         self.lastAcceptedTile = None
+        self.lastSelectedTile = None
         self.lastFreeSlotID = None
         self.rotationSpeed = None
     def __del__(self):
@@ -23,17 +25,28 @@ class DestinationImpl(object):
             if (tile is None):
                 self.lastFreeSlotID = slot
                 break
+    # lastSelectedTile.
+    def getLastSelectedTile(self, key):
+        return [self.lastSelectedTile]
     # alignFreeSlotWithFilter.
     def onAlignFinish(self, key, value):
         self.c.unlisten("$ROTATE.$SCENE.$NODE.active")
         self.c.report("destination.alignFreeSlotWithFilter", "0")
+    # alignSelectedTileWithFilter.
+    def onAlignSelFinish(self, key, value):
+        self.c.unlisten("$ROTATE.$SCENE.$NODE.active")
+        self.c.report("destination.alignSelectedTileWithFilter", "0")
     # liftLastAcceptedTile.
     def onTileLifted(self, key, value):
         self.c.unlisten("$LIFT.$SCENE.$TILE.active")
         self.c.report("destination.liftLastAcceptedTile", "0")
-    def prepareTargetRotation(self):
+    def onTileSelection(self, key, value):
+        self.lastSelectedTile = key[2]
+        self.c.setConst("SEQ", DESTINATION_SEQUENCE_SELECTION)
+        self.c.set("$SEQ.active", "1")
+    def prepareTargetRotation(self, slotID):
         # Set new rotation.
-        r = 90 - 36 * self.lastFreeSlotID
+        r = 90 - 36 * slotID
         self.c.set("$ROTATE.point",
                    "{0} 0 0 {1}".format(self.rotationSpeed, r))
     def recordRotationSpeedOnce(self):
@@ -53,14 +66,48 @@ class DestinationImpl(object):
     def setAlignFreeSlotWithFilter(self, key, value):
         self.recordRotationSpeedOnce()
         self.findFreeSlot()
-        self.prepareTargetRotation()
+        self.prepareTargetRotation(self.lastFreeSlotID)
         self.c.listen("$ROTATE.$SCENE.$NODE.active", "0", self.onAlignFinish)
         self.c.set("$ROTATE.$SCENE.$NODE.active", "1")
+    # alignSelectedTileWithFilter.
+    def setAlignSelectedTileWithFilter(self, key, value):
+        # Find selected slot.
+        slotID = None
+        for slot, tile in self.tiles.items():
+            if (tile == self.lastSelectedTile):
+                slotID = slot
+                break
+        self.prepareTargetRotation(slotID)
+        self.c.listen("$ROTATE.$SCENE.$NODE.active", "0", self.onAlignSelFinish)
+        self.c.set("$ROTATE.$SCENE.$NODE.active", "1")
+    # allowTileSelection.
+    def setAllowTileSelection(self, key, value):
+        for slot, tile in self.tiles.items():
+            if (tile is not None):
+                self.c.setConst("TILE", tile)
+                self.c.listen("node.$SCENE.$TILE.selected",
+                              "1",
+                              self.onTileSelection)
+        self.c.report("destination.allowTileSelection", "0")
+    # disallowTileSelection.
+    def setDisallowTileSelection(self, key, value):
+        for slot, tile in self.tiles.items():
+            if (tile is not None):
+                self.c.setConst("TILE", tile)
+                self.c.unlisten("node.$SCENE.$TILE.selected")
+        self.c.report("destination.disallowTileSelection", "0")
     # liftLastAcceptedTile.
     def setLiftLastAcceptedTile(self, key, value):
         self.c.setConst("LIFT", DESTINATION_ACTION_LIFT_TILE)
         self.c.listen("$LIFT.$SCENE.$TILE.active", "0", self.onTileLifted)
         self.c.set("$LIFT.$SCENE.$TILE.active", "1")
+    # removeSelectedTile.
+    def setRemoveSelectedTile(self, key, value):
+        for slot, tile in self.tiles.items():
+            if (tile == self.lastSelectedTile):
+                self.tiles[slot] = None
+                self.lastSelectedTile = None
+                break
 
 class Destination(object):
     def __init__(self, sceneName, nodeName, env):
@@ -71,8 +118,19 @@ class Destination(object):
         self.c.provide("destination.acceptTile", self.impl.setAcceptTile)
         self.c.provide("destination.alignFreeSlotWithFilter",
                        self.impl.setAlignFreeSlotWithFilter)
+        self.c.provide("destination.alignSelectedTileWithFilter",
+                       self.impl.setAlignSelectedTileWithFilter)
+        self.c.provide("destination.allowTileSelection",
+                       self.impl.setAllowTileSelection)
+        self.c.provide("destination.disallowTileSelection",
+                       self.impl.setDisallowTileSelection)
+        self.c.provide("destination.lastSelectedTile",
+                       None,
+                       self.impl.getLastSelectedTile)
         self.c.provide("destination.liftLastAcceptedTile",
                        self.impl.setLiftLastAcceptedTile)
+        self.c.provide("destination.removeSelectedTile",
+                       self.impl.setRemoveSelectedTile)
     def __del__(self):
         # Tear down.
         self.c.clear()

@@ -50,6 +50,10 @@ class FilterImpl(object):
     def onAlgorithmFinish(self, key, value):
         self.c.unlisten("$SEQ.active")
         self.c.report("filter.ifNoFreeSlotsPerformAlgorithm", "0")
+    # alignFilterSlotWithDestination.
+    def onAlignFilterDstFinish(self, key, value):
+        self.c.unlisten("$ROTATE.$SCENE.$NODE.active")
+        self.c.report("filter.alignFilterSlotWithDestination", "0")
     # alignFreeSlotWithSource.
     def onAlignFinish(self, key, value):
         self.c.unlisten("$ROTATE.$SCENE.$NODE.active")
@@ -93,6 +97,15 @@ class FilterImpl(object):
         freeLeaf = FILTER_LEAF_PREFIX + str(self.lastFreeSlotID)
         self.c.setConst("TILE", self.lastAcceptedTile)
         self.c.set("node.$SCENE.$TILE.parentAbs", freeLeaf)
+    # alignFilterSlotWithDestination.
+    def setAlignFilterSlotWithDestination(self, key, value):
+        # Mark filter slot as used one for unified processing.
+        self.lastUsedSlotID = FILTER_LEAF_FILTER_ID
+        # Also, mark filter slot as unused for the same reason.
+        self.lastFreeSlotID = self.lastUsedSlotID
+        self.prepareRotationToDst()
+        self.c.listen("$ROTATE.$SCENE.$NODE.active", "0", self.onAlignFilterDstFinish)
+        self.c.set("$ROTATE.$SCENE.$NODE.active", "1")
     # alignFreeSlotWithSource.
     def setAlignFreeSlotWithSource(self, key, value):
         self.recordRotationSpeedOnce()
@@ -213,6 +226,8 @@ class Filter(object):
         self.c.setConst("SCENE",  sceneName)
         self.c.setConst("NODE",   nodeName)
         self.c.provide("filter.acceptTile", self.impl.setAcceptTile)
+        self.c.provide("filter.alignFilterSlotWithDestination",
+                       self.impl.setAlignFilterSlotWithDestination)
         self.c.provide("filter.alignFreeSlotWithSource",
                        self.impl.setAlignFreeSlotWithSource)
         self.c.provide("filter.alignUsedSlotWithDestination",
