@@ -27,9 +27,9 @@ class SourceImpl(object):
         for slot, tile in self.tiles.items():
             self.c.setConst("TILE", tile)
             mat = self.c.get("node.$SCENE.$TILE.material")[0]
-            v0 = int(mat[-2])
-            v1 = int(mat[-1])
-            res = res + v0 + v1
+            i = int(mat[-2])
+            j = int(mat[-1])
+            res = res + i + j
         return [str(res)]
     # alignSelectedTileWithFilter.
     def onAlignFinish(self, key, value):

@@ -20,6 +20,7 @@ class FilterImpl(object):
             self.tiles[i] = None
         self.lastAcceptedTile = None
         self.lastFreeSlotID = None
+        self.lastUnmatchedTile = None
         self.lastUsedSlotID = None
         self.rotationSpeed = None
     def __del__(self):
@@ -132,6 +133,9 @@ class FilterImpl(object):
         self.c.report("filter.createTile", "0")
     # destroyUnmatchedTile.
     def setDestroyUnmatchedTile(self, key, value):
+        # Tell TileFactory to mark it unused.
+        self.c.set("tileFactory.freeTile", self.lastUnmatchedTile)
+        # Remove from the scene.
         self.c.set("node.$SCENE.$TILE.parent", "")
         self.c.report("filter.destroyUnmatchedTile", "0")
     # dropLastAcceptedTile.
@@ -163,6 +167,7 @@ class FilterImpl(object):
                 break
         self.c.setConst("DROP", FILTER_ACTION_DROP_UNMATCHED_TILE)
         self.c.setConst("TILE", tileName)
+        self.lastUnmatchedTile = tileName
         self.c.listen("$DROP.$SCENE.$TILE.active", "0", self.onUnmatchedTileDropped)
         self.c.set("$DROP.$SCENE.$TILE.active", "1")
     # ifNoFreeSlotsPerformAlgorithm.
