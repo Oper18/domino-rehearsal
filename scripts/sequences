@@ -1,19 +1,16 @@
 createSourceTiles
     source.createTile
     source.dropLastCreatedTile
-    main.provideRandomLCDValue
     source.createTile
     source.dropLastCreatedTile
     source.createTile
     source.dropLastCreatedTile
     source.createTile
     source.dropLastCreatedTile
-    main.provideRandomLCDValue
     source.createTile
     source.dropLastCreatedTile
     source.createTile
     source.dropLastCreatedTile
-    main.provideRandomLCDValue
 start
     main.replayStartSound
     createSourceTiles
@@ -21,15 +18,16 @@ start
     filter.dropLastCreatedTile
     source.allowTileSelection
 sourceTileSelection
+    main.increaseSelectionsNbAndDisplayIt
     destination.disallowTileSelection
     source.disallowTileSelection
     source.alignSelectedTileWithFilter
-    main.provideRandomLCDValue
     filter.alignFreeSlotWithSource
     main.assignSelectedSourceTileToFilter
     filter.dropLastAcceptedTile
     filter.ifNoFreeSlotsPerformAlgorithm
     source.allowTileSelection
+    main.finishTheGameIfDestinationIsFull
 algorithmFailure
     filter.returnToInitialRotation
     filter.dropUnmatchedTile
@@ -55,7 +53,9 @@ algorithmSuccess
     source.dropLastCreatedTile
     destination.allowTileSelection
 destinationTileSelection
+    main.increaseSelectionsNbAndDisplayIt
     destination.disallowTileSelection
+    source.disallowTileSelection
     filter.alignFilterSlotWithDestination
     destination.alignFreeSlotWithFilter
     main.assignFilterTileToDestination
@@ -63,3 +63,8 @@ destinationTileSelection
     destination.alignSelectedTileWithFilter
     main.assignSelectedDestinationTileToFilter
     filter.dropLastAcceptedTile
+    source.allowTileSelection
+finish
+    destination.disallowTileSelection
+    source.disallowTileSelection
+    main.displayResults

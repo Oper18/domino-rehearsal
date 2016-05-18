@@ -25,9 +25,27 @@ class DestinationImpl(object):
             if (tile is None):
                 self.lastFreeSlotID = slot
                 break
+    # isFull.
+    def getIsFull(self, key):
+        full = True
+        for slot, tile in self.tiles.items():
+            if (tile is None):
+                full = False
+                break
+        return ["1" if full else "0"]
     # lastSelectedTile.
     def getLastSelectedTile(self, key):
         return [self.lastSelectedTile]
+    # result.
+    def getResult(self, key):
+        res = 0
+        for slot, tile in self.tiles.items():
+            self.c.setConst("TILE", tile)
+            mat = self.c.get("node.$SCENE.$TILE.material")[0]
+            v0 = int(mat[-2])
+            v1 = int(mat[-1])
+            res = res + v0 + v1
+        return [str(res)]
     # alignFreeSlotWithFilter.
     def onAlignFinish(self, key, value):
         self.c.unlisten("$ROTATE.$SCENE.$NODE.active")
@@ -124,6 +142,7 @@ class Destination(object):
                        self.impl.setAllowTileSelection)
         self.c.provide("destination.disallowTileSelection",
                        self.impl.setDisallowTileSelection)
+        self.c.provide("destionation.isFull", None, self.impl.getIsFull)
         self.c.provide("destination.lastSelectedTile",
                        None,
                        self.impl.getLastSelectedTile)
@@ -131,6 +150,7 @@ class Destination(object):
                        self.impl.setLiftLastAcceptedTile)
         self.c.provide("destination.removeSelectedTile",
                        self.impl.setRemoveSelectedTile)
+        self.c.provide("destination.result", None, self.impl.getResult)
     def __del__(self):
         # Tear down.
         self.c.clear()

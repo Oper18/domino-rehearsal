@@ -4,8 +4,10 @@ import random
 
 TILE_MATERIAL_PREFIX = "tile"
 TILE_MODEL           = "models/tile.osgt"
-TILE_VALUE_MIN       = 0
-TILE_VALUE_MAX       = 6
+#TILE_VALUE_MIN       = 0
+#TILE_VALUE_MAX       = 6
+TILE_VALUE_MIN       = 1
+TILE_VALUE_MAX       = 2
 
 class TileFactoryImpl(object):
     def __init__(self, c):

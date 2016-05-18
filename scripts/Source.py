@@ -21,6 +21,16 @@ class SourceImpl(object):
         self.c = None
     def getLastSelectedTile(self, key):
         return [self.lastSelectedTileName]
+    # result.
+    def getResult(self, key):
+        res = 0
+        for slot, tile in self.tiles.items():
+            self.c.setConst("TILE", tile)
+            mat = self.c.get("node.$SCENE.$TILE.material")[0]
+            v0 = int(mat[-2])
+            v1 = int(mat[-1])
+            res = res + v0 + v1
+        return [str(res)]
     # alignSelectedTileWithFilter.
     def onAlignFinish(self, key, value):
         self.c.unlisten("$ROTATE.$SCENE.$NODE.active")
@@ -122,6 +132,7 @@ class Source(object):
                        self.impl.getLastSelectedTile)
         self.c.provide("source.removeSelectedTile",
                        self.impl.setRemoveSelectedTile)
+        self.c.provide("source.result", None, self.impl.getResult)
     def __del__(self):
         # Tear down.
         self.c.clear()
