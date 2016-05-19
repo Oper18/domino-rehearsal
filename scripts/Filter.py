@@ -183,23 +183,9 @@ class FilterImpl(object):
             self.c.report("filter.ifNoFreeSlotsPerformAlgorithm", "0")
             return
         # Perform algorithm.
-        # THIS IS A SIMPLIFIED MATCHING ALGORITHM: simply check
-        # if all tiles are equal.
-        # TODO: rewrite to use full version of the algorithm.
-        # Use tile material to compare equality.
-        # It's ugly, but fine for now.
-        lastTileMat = None
-        allTilesAreEqual = True
-        for slot, tile in self.tiles.items():
-            self.c.setConst("TILE", tile)
-            mat = self.c.get("node.$SCENE.$TILE.material")[0]
-            if (lastTileMat is None):
-                lastTileMat = mat
-            elif (lastTileMat != mat):
-                allTilesAreEqual = False
-                break
+        result = self.tilesMatch()
         # Run success sequence.
-        if (allTilesAreEqual):
+        if (result):
             self.c.setConst("SEQ", FILTER_SEQUENCE_ALGORITHM_SUCCESS)
             self.c.listen("$SEQ.active", "0", self.onAlgorithmFinish)
             self.c.set("$SEQ.active", "1")
@@ -223,6 +209,60 @@ class FilterImpl(object):
                       "0",
                       self.onReturnToInitialRotationFinish)
         self.c.set("$ROTATE.$SCENE.$NODE.active", "1")
+    def tilesMatch(self):
+        ids = []
+        for slot, tile in self.tiles.items():
+            tileName = self.tiles[slot]
+            ij = self.tileValues(tileName)
+            ids.append(ij)
+        # Prepare result slots.
+        ok = []
+        # For all filter halves.
+        for i in xrange(0, 2):
+            tileIDs = []
+            # For all accepted tiles.
+            for j in xrange(0, 2):
+                tileIDs.append(False)
+            ok.append(tileIDs)
+        # For all filter halves.
+        for fh in xrange(0, 2):
+            # For all accepted tiles.
+            for t in xrange(1, 3):
+                oneOfHalvesMatches = False
+                # For both their halves.
+                for th in xrange(0, 2):
+                    # Check if filter half matches any half
+                    # of the accepted tile.
+                    if (ids[0][fh] == ids[t][th]):
+                        oneOfHalvesMatches = True
+                        #print "match {0}|{1} -> {2}|{3}".format(0, fh, t, th)
+                        break
+                # In case of a match, mark "filter half -> tile" pair as valid.
+                if (oneOfHalvesMatches):
+                    ok[fh][t - 1] = True
+        #print ok
+        return ((ok[0][0] and ok[1][1]) or
+                (ok[0][1] and ok[1][0]))
+    def tilesMatchSimple(self):
+        # THIS IS A SIMPLIFIED MATCHING ALGORITHM: simply check
+        # if all tiles are equal.
+        # Use tile material to compare equality.
+        # It's ugly, but fine for now.
+        lastMat = None
+        allTilesAreEqual = True
+        for slot, tile in self.tiles.items():
+            self.c.setConst("TILE", tile)
+            mat = self.c.get("node.$SCENE.$TILE.material")[0]
+            if (lastMat is None):
+                lastMat = mat
+            elif (lastMat != mat):
+                allTilesAreEqual = False
+                break
+        return allTilesAreEqual
+    def tileValues(self, tileName):
+        self.c.setConst("TILE", tileName)
+        mat = self.c.get("node.$SCENE.$TILE.material")[0]
+        return [mat[-2], mat[-1]]
 
 class Filter(object):
     def __init__(self, sceneName, nodeName, env):

@@ -102,6 +102,9 @@ class Main(object):
         seqs = {}
         lastSeqName = None
         for ln in lns:
+            # Ignore lines starting with "#".
+            if (ln.startswith("#")):
+                continue
             # Sequence name.
             if (ln[0].isalpha()):
                 lastSeqName = ln.strip()
