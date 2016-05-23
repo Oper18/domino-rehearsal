@@ -13,10 +13,13 @@ class MainImpl(object):
         self.c = c
         self.isStarted = False
         self.selectionsNb = None
+        self.fileNameAbs = None
     def __del__(self):
         self.c = None
     def displaySelectionsNb(self):
         self.c.set("lcd.$SCENE.$LCD.value", str(self.selectionsNb))
+    def onFileNameAbs(self, key, value):
+        self.fileNameAbs = value[0]
     def onSpace(self, key, value):
         print "Space pressed"
         if (self.isStarted):
@@ -93,8 +96,12 @@ class Main(object):
         # Read sequence file.
         # TODO: Move to ESequence. Make it prettier.
         lns = None
-        self.c.setConst("FILENAME", "scripts/sequences")
-        fileName = self.c.get("pathResolver.$FILENAME.absoluteFileName")[0]
+        self.c.listen("pathResolver.MainScript.fileNameAbs",
+                      None,
+                      self.impl.onFileNameAbs)
+        self.c.set("pathResolver.MainScript.resolveFileNameAbs",
+                   "scripts/sequences")
+        fileName = self.impl.fileNameAbs
         with open(fileName, "r") as f:
             lns = f.readlines()
         # Parse the file.
