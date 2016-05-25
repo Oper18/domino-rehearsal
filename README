@@ -1,14 +1,19 @@
 
-This is a domino-rehearsal project for for Open Game Studio (OGS) Editor.
+This is a Domino rehearsal project for Open Game Studio (OGS) Editor.
 
 Overview
 ========
 
 This project has been created to rehearse Open Game Studio May 2016 live
 session.
-You can find YouTube videos that depict the process of creating it from
+
+Materials
+========
+
+You find YouTube videos that depict the process of creating it from
 scratch with OGS Editor 0.9 here:
 https://www.youtube.com/playlist?list=PLWMTZqE4MAMKp3wP1N63xbdhdgfKi-d-J
+
 You can find OGS Editor 0.9 for Linux (Debian based), OS X (10.9+), Windows
 here:
 https://sourceforge.net/projects/osrpgcreation/files/Editor/jenkins/49_2016-05-24_04-48-47_0.9.0/
